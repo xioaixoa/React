@@ -4,7 +4,8 @@ import { Input, Button, List, message ,Row, Col} from "antd";
 import axios from "axios";
 import store from './store/index';
 // import {CHANGE_INPUT_INPUTVALUE,ADD_TODO_ITEM,DEL_DATA} from './store/actionType'
-import { getInputChangeAction, getAddTodoItem, getDelData }  from './store/actionCreators'
+import { getInitList,initListAction,getInputChangeAction, getAddTodoItem, getDelData, getAjax, getTodoList }  from './store/actionCreators'
+import TodoListUI from './TodoListUI'
 
 class TodoList extends Component {
  
@@ -27,68 +28,23 @@ class TodoList extends Component {
 
   render() {
     return (
-      <div style={{ margin: "10px"}}>
-        {/* <Row type="flex" gutter={32} justify="start"> */}
-          {/* <Col span={12} style={{ padding:0}}> */}
-          <Input
-            value={this.state.inputValue}
-            placeholder="add todo"
-            onChange={this.handleChange}
-            style={{ width:"60%"}}
-
-          />
-          {/* </Col> */}
-          {/* <Col span={3} style={{ padding:0}}> */}
-          <Button
-            type="primary"
-            onClick={this.handleAdd}
-            // style={{ marginTop: "0.5rem", marginRight: "0.5rem", }}
-          >
-            Add
-          </Button>
-          {/* </Col> */}
-          {/* <Col span={4} > */}
-          <Button
-            type="primary"
-            onClick={this.handleAjax}
-            // style={{ marginTop: "0.5rem", marginRight: "0.5rem" }}
-          >
-            Export
-          </Button>
-          {/* </Col> */}
-          {/* <Col span={4} > */}
-          <Button
-            type="primary"
-            onClick={this.handleClean}
-            // style={{ width: "wrap-content", marginTop: "0.5rem", marginRight: "0.5rem" }}
-          >
-            Clean
-          </Button>
-          {/* </Col> */}
-          {/* </Row> */}
-          <List
-            header={<div style={{ textAlign: "center" }}>** TodoList **</div>}
-            footer={
-              <div style={{ textAlign: "center", fontSize: "10px" }}>
-                {" "}
-                Copyright Rain{" "}
-              </div>
-            }
-            bordered
-            dataSource={this.state.dataObj}
-            renderItem={item => (
-              <List.Item onClick={this.handleDel}>
-                <ul>
-                  <li>{item}</li>
-                </ul>
-              </List.Item>
-            )}
-            style={{ width: "20rem", margin: "0.5rem" }}
-          />
-      </div>
+      <TodoListUI 
+      inputValue={this.state.inputValue}
+      handleChange={this.handleChange}
+      handleAdd={this.handleAdd}
+      handleAjax={this.handleAjax}
+      handleClean={this.handleClean}
+      handleDel={this.handleDel}
+      dataObj={this.state.dataObj}
+      />
     );
   }
 
+  componentDidMount() {
+    // redux saga
+    const action = getInitList();
+    store.dispatch(action);
+  }
 
   handleAdd() {
     {
@@ -138,9 +94,9 @@ class TodoList extends Component {
     //   value: e.target.value
     // }
     // store.dispatch(action)
-
     const action = getInputChangeAction(e.target.value);
     store.dispatch(action);
+    
   }
 
   handleDel(index) {
@@ -154,10 +110,9 @@ class TodoList extends Component {
     //   index
     // }
     // store.dispatch(action)
-
     const action = getDelData(index);
     store.dispatch(action);
-
+    
     // this.setState(
     //   prevState => {
     //     const dataObj = [...prevState.dataObj];
@@ -184,31 +139,41 @@ class TodoList extends Component {
   }
 
   handleAjax() {
-    axios
-      .get("/todoList.json")
-      .then(res => {
-        console.log(res.data);
+    // const action = getTodoList ();
+    // store.dispatch(action)
 
-        this.setState(
-          () => {
-            return {
-              dataObj: [...this.state.dataObj.concat(res.data)]
-            };
-          },
-          () => {
-            message.success("Exportint successed!", 0.4);
-          }
-        );
+
+    // axios
+    //   .get("/todoList.json")
+    //   .then(res => {
+    //     console.log(res.data);
+    //     const action = initListAction(res.data);
+    //     store.dispatch(action);
+    //     // const action = getAjax(res.data);
+    //     // store.dispatch(action);
+    //      })
+    //   .catch(() => {
+    //     message.error("Fail to export!", 1);
+    //   });
+
+        // this.setState(
+        //   () => {
+        //     return {
+        //       dataObj: [...this.state.dataObj.concat(res.data)]
+        //     };
+        //   },
+        //   () => {
+        //     message.success("Exportint successed!", 0.4);
+        //   }
+        // );
 
         //   this.setState(() => ({
         //     // return {
         //       dataObj: [...this.state.dataObj.concat(res.data)]
         //     // }
         //   },() => {setTimeout(function () {alert('成功导入！')},100)}))
-      })
-      .catch(() => {
-        message.error("Fail to export!", 1);
-      });
+      
+     
   }
 }
 
